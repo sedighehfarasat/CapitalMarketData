@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CapitalMarketData.Worker", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CapitalMarketData.Tests", "CapitalMarketData.Tests\CapitalMarketData.Tests.csproj", "{575C4E48-D78E-43E5-9B4B-DF19B5610D73}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CapitalMarketData.WebAPI", "CapitalMarketData.WebAPI\CapitalMarketData.WebAPI.csproj", "{E985830D-4BD4-44AA-8B0D-86B4F0BE4DB3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{575C4E48-D78E-43E5-9B4B-DF19B5610D73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{575C4E48-D78E-43E5-9B4B-DF19B5610D73}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{575C4E48-D78E-43E5-9B4B-DF19B5610D73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E985830D-4BD4-44AA-8B0D-86B4F0BE4DB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E985830D-4BD4-44AA-8B0D-86B4F0BE4DB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E985830D-4BD4-44AA-8B0D-86B4F0BE4DB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E985830D-4BD4-44AA-8B0D-86B4F0BE4DB3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
