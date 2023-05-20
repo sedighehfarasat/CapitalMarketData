@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-CapitalMarketData.Worker-7c869276-4284-4854-8b3c-20fb7ceb0db8</UserSecretsId>
+    <Version>1.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
