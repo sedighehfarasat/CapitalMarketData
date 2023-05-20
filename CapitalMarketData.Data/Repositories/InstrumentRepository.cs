@@ -13,6 +13,19 @@ public class InstrumentRepository : IInstrumentRepository
         _db = db;
     }
 
+    public async Task<int> AddInstrument(Instrument instrument)
+    {
+        ArgumentNullException.ThrowIfNull(instrument);
+
+        int affected = 0;
+        if (await _db.Instruments.AnyAsync(x => x.Id == instrument.Id) == false)
+        {
+            await _db.Instruments.AddAsync(instrument);
+            affected = _db.SaveChanges();
+        }
+        return affected;
+    }
+
     public async Task<IEnumerable<Instrument>> GetAll()
     {
         return await _db.Instruments.ToListAsync();

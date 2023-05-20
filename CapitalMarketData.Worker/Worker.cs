@@ -2,6 +2,7 @@ using CapitalMarketData.Entities.Contracts;
 using CapitalMarketData.Entities.Entities;
 using CapitalMarketData.Entities.Enums;
 using CapitalMarketData.Worker.Helper;
+using CapitalMarketData.Worker.Models;
 using CapitalMarketData.Worker.Services;
 using Serilog;
 
@@ -20,6 +21,34 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        Console.WriteLine("Do You Want To Update Instument List? Y/N");
+        var isUpdateNeeded = Console.ReadLine()!;
+        if (isUpdateNeeded.ToLower() == "y")
+        {
+            Companies? companies = await TseService.GetStockList();
+            if (companies is null)
+            {
+                Log.Error($"No List Of Companies!");
+                Environment.Exit(1);
+            }
+
+            foreach (var category in companies.companies)
+            {
+                foreach (var stock in category.list)
+                {
+                    var instrument = new Instrument()
+                    {
+                        Id = stock.ic,
+                        Ticker = stock.sy,
+                        Name = stock.n,
+                    };
+
+                    int affected = await _instrumentRepo.AddInstrument(instrument);
+                    Log.Information($"{affected} row affected for {instrument.Id}");
+                }
+            }
+        }
+
         var instruments = await _instrumentRepo.GetAll();
         if (!instruments.Any())
         {
@@ -33,27 +62,27 @@ public class Worker : BackgroundService
             {
                 try
                 {
-                    var data = TseService.FetchLiveData(instrument.Id);
-                    if (data.Result is not null)
+                    var data = await TseService.FetchLiveData(instrument.Id);
+                    if (data is not null)
                     {
                         TradingData tradingData = new()
                         {
                             InstrumentId = instrument.Id,
-                            Status = Convertor.ToStatusEnum(data.Result.header[0].state),
+                            Status = Convertor.ToStatusEnum(data.header[0].state),
                         };
                         if (tradingData.Status == Status.Trading)
                         {
-                            tradingData.OpeningPrice = decimal.Parse(data.Result.mainData.agh);
-                            tradingData.HighestPrice = decimal.Parse(data.Result.mainData.bt.u);
-                            tradingData.LowestPrice = decimal.Parse(data.Result.mainData.bt.d);
-                            tradingData.LastPrice = decimal.Parse(data.Result.header[1].am);
-                            tradingData.ClosingPrice = decimal.Parse(data.Result.mainData.ghp.v);
-                            tradingData.PreviousClosingPrice = decimal.Parse(data.Result.mainData.rgh);
-                            tradingData.UpperBoundPrice = decimal.Parse(data.Result.mainData.bm.u);
-                            tradingData.LowerBoundPrice = decimal.Parse(data.Result.mainData.bm.d);
-                            tradingData.NumberOfTrades = int.Parse(data.Result.mainData.dm.Replace(",", string.Empty));
-                            tradingData.TradingValue = Convertor.ToNumber(data.Result.mainData.arm);
-                            tradingData.TradingVolume = (long?)Convertor.ToNumber(data.Result.mainData.hmo);
+                            tradingData.OpeningPrice = decimal.Parse(data.mainData.agh);
+                            tradingData.HighestPrice = decimal.Parse(data.mainData.bt.u);
+                            tradingData.LowestPrice = decimal.Parse(data.mainData.bt.d);
+                            tradingData.LastPrice = decimal.Parse(data.header[1].am);
+                            tradingData.ClosingPrice = decimal.Parse(data.mainData.ghp.v);
+                            tradingData.PreviousClosingPrice = decimal.Parse(data.mainData.rgh);
+                            tradingData.UpperBoundPrice = decimal.Parse(data.mainData.bm.u);
+                            tradingData.LowerBoundPrice = decimal.Parse(data.mainData.bm.d);
+                            tradingData.NumberOfTrades = int.Parse(data.mainData.dm.Replace(",", string.Empty));
+                            tradingData.TradingValue = Convertor.ToNumber(data.mainData.arm);
+                            tradingData.TradingVolume = (long?)Convertor.ToNumber(data.mainData.hmo);
                         }
                         int affected = await _tradingDataRepo.AddTradingData(tradingData);
                         Log.Information($"{affected} row affected for {instrument.Id}");
