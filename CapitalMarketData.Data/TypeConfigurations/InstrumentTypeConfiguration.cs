@@ -7,7 +7,6 @@ namespace CapitalMarketData.Data.TypeConfigurations;
 public class InstrumentTypeConfiguration : IEntityTypeConfiguration<Instrument>
 {
     private const string TableName = "Instruments";
-    private const string FilePath = @"F:\Algorithmic Trading\Capital Market Data\Documents\ISIN.csv";
 
     public void Configure(EntityTypeBuilder<Instrument> builder)
     {
@@ -32,17 +31,5 @@ public class InstrumentTypeConfiguration : IEntityTypeConfiguration<Instrument>
         builder.Property(x => x.Board);
 
         builder.Property(x => x.Industry);
-
-        using (StreamReader textReader = File.OpenText(FilePath))
-        {
-            while (!textReader.EndOfStream)
-            {
-                var line = textReader.ReadLine()!;
-                if (line.Contains("IR"))
-                {
-                    builder.HasData(new Instrument { Id = line.Split(',')[1], Ticker = line.Split(',')[0] });
-                }
-            }
-        }
     }
 }
