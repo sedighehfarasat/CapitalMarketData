@@ -11,7 +11,7 @@ public class CapitalMarketDataDbContext : DbContext
     {
     }
 
-    public DbSet<Instrument> Instruments { get; set; }
+    public DbSet<Stock> Stocks { get; set; }
 
     public DbSet<TradingData> TradingData { get; set; }
 

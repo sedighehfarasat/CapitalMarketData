@@ -8,9 +8,9 @@ namespace CapitalMarketData.WebApi.Controllers.V1;
 [Route("api/v1/[Controller]")]
 public class InstrumentController : ControllerBase
 {
-    private readonly IInstrumentRepository _instrumentRepo;
+    private readonly IStockRepository _instrumentRepo;
 
-    public InstrumentController(IInstrumentRepository instrumentRepo)
+    public InstrumentController(IStockRepository instrumentRepo)
     {
         _instrumentRepo = instrumentRepo;
     }

@@ -1,14 +1,7 @@
-﻿using CapitalMarketData.Entities.Enums;
+﻿namespace CapitalMarketData.Entities.Entities;
 
-namespace CapitalMarketData.Entities.Entities;
-
-public class Instrument
+public abstract class Instrument
 {
-    public Instrument()
-    {
-        TradingData = new HashSet<TradingData>();
-    }
-
     /// <summary>
     /// Gets or sets the instrument's ISIN code.
     /// </summary>
@@ -25,10 +18,4 @@ public class Instrument
     /// Gets or sets the full name of the instrument.
     /// </summary>
     public string? Name { get; set; }
-
-    public Board? Board { get; set; }
-
-    public Industry? Industry { get; set; }
-
-    public ICollection<TradingData> TradingData { get; set; }
 }
