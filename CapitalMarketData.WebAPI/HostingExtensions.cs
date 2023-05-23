@@ -13,7 +13,7 @@ public static class HostingExtensions
         builder.Services.AddDbContext<CapitalMarketDataDbContext>(options =>
             options.UseSqlServer(connectionString));
 
-        builder.Services.AddScoped<IInstrumentRepository, InstrumentRepository>();
+        builder.Services.AddScoped<IStockRepository, StockRepository>();
         builder.Services.AddScoped<ITradingDataRepository, TradingDataRepository>();
 
         builder.Services.AddControllers();

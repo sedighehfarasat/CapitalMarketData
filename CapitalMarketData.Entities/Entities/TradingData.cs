@@ -37,5 +37,5 @@ public class TradingData
     
     public long? TradingVolume { get; set; }
 
-    public Instrument? Instrument { get; set; }
+    public Stock? Stock { get; set; }
 }
