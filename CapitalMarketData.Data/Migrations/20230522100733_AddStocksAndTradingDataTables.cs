@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CapitalMarketData.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class AddStocksAndTradingDataTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Instruments",
+                name: "Stocks",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
@@ -24,7 +24,7 @@ namespace CapitalMarketData.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Instruments", x => x.Id);
+                    table.PrimaryKey("PK_Stocks", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -50,9 +50,9 @@ namespace CapitalMarketData.Data.Migrations
                 {
                     table.PrimaryKey("PK_TradingData", x => new { x.InstrumentId, x.Date });
                     table.ForeignKey(
-                        name: "FK_TradingData_Instruments_InstrumentId",
+                        name: "FK_TradingData_Stocks_InstrumentId",
                         column: x => x.InstrumentId,
-                        principalTable: "Instruments",
+                        principalTable: "Stocks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -70,7 +70,7 @@ namespace CapitalMarketData.Data.Migrations
                 name: "TradingData");
 
             migrationBuilder.DropTable(
-                name: "Instruments");
+                name: "Stocks");
         }
     }
 }

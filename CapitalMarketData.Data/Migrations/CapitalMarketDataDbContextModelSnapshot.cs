@@ -22,34 +22,40 @@ namespace CapitalMarketData.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CapitalMarketData.Entities.Entities.Instrument", b =>
+            modelBuilder.Entity("CapitalMarketData.Entities.Entities.Stock", b =>
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                        .HasColumnType("nvarchar(32)")
+                        .HasColumnOrder(0);
 
                     b.Property<int?>("Board")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnOrder(4);
 
                     b.Property<int?>("Industry")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnOrder(5);
 
                     b.Property<string>("InsCode")
                         .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                        .HasColumnType("nvarchar(32)")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Name")
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("nvarchar(64)")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("Ticker")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                        .HasColumnType("nvarchar(32)")
+                        .HasColumnOrder(2);
 
                     b.HasKey("Id");
 
-                    b.ToTable("Instruments", (string)null);
+                    b.ToTable("Stocks", (string)null);
                 });
 
             modelBuilder.Entity("CapitalMarketData.Entities.Entities.TradingData", b =>
@@ -106,16 +112,16 @@ namespace CapitalMarketData.Data.Migrations
 
             modelBuilder.Entity("CapitalMarketData.Entities.Entities.TradingData", b =>
                 {
-                    b.HasOne("CapitalMarketData.Entities.Entities.Instrument", "Instrument")
+                    b.HasOne("CapitalMarketData.Entities.Entities.Stock", "Stock")
                         .WithMany("TradingData")
                         .HasForeignKey("InstrumentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Instrument");
+                    b.Navigation("Stock");
                 });
 
-            modelBuilder.Entity("CapitalMarketData.Entities.Entities.Instrument", b =>
+            modelBuilder.Entity("CapitalMarketData.Entities.Entities.Stock", b =>
                 {
                     b.Navigation("TradingData");
                 });
