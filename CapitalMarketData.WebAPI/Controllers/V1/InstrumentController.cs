@@ -26,7 +26,7 @@ public class InstrumentController : ControllerBase
         }
         else
         {
-            var instrument = await _instrumentRepo.GetInstrumentById(id);
+            var instrument = await _instrumentRepo.GetById(id);
             if (instrument is null)
             {
                 return NotFound();
@@ -49,7 +49,7 @@ public class InstrumentController : ControllerBase
         }
         else
         {
-            var instrument = await _instrumentRepo.GetInstrumentByTicker(ticker + "1");
+            var instrument = await _instrumentRepo.GetByTicker(ticker + "1");
             if (instrument is null)
             {
                 return NotFound();

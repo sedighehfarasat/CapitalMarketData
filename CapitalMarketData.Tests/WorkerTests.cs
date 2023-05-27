@@ -16,7 +16,22 @@ public class WorkerTests
     public async Task TseService_NullIsin()
     {
         string isin = null!;
-        var caughtException = Assert.ThrowsAsync<ArgumentNullException>(() => TseService.FetchLiveData(isin));
-        Assert.Equal("Value cannot be null. (Parameter 'isin')", caughtException.Result.Message);
+        var caughtException = await Assert.ThrowsAsync<ArgumentNullException>(() => TseService.FetchLiveData(isin));
+        Assert.Equal("Value cannot be null. (Parameter 'isin')", caughtException.Message);
+    }
+
+    [Fact]
+    public async Task TsetmcService_GetInsCodesFromFile()
+    {
+        var data = await TsetmcService.GetInsCodesFromFile();
+        Assert.NotNull(data);
+    }
+
+    [Fact]
+    public async Task TsetmcService_GetIntrumentInfo()
+    {
+        string insCode = "25631699615003698";
+        var data = await TsetmcService.GetIntrumentInfo(insCode);
+        Assert.NotNull(data);
     }
 }

@@ -29,7 +29,7 @@ try
             option.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
         });
 
-        services.AddScoped<IInstrumentRepository, InstrumentRepository>();
+        services.AddScoped<IStockRepository, StockRepository>();
         services.AddScoped<ITradingDataRepository, TradingDataRepository>();
 
         services.AddHostedService<Worker>();

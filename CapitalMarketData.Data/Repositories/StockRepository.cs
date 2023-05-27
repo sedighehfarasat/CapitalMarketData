@@ -13,7 +13,7 @@ public class StockRepository : IStockRepository
         _db = db;
     }
 
-    public async Task<int> AddInstrument(Stock stock)
+    public async Task<int> Add(Stock stock)
     {
         ArgumentNullException.ThrowIfNull(stock);
 
@@ -31,13 +31,19 @@ public class StockRepository : IStockRepository
         return await _db.Stocks.ToListAsync();
     }
 
-    public async Task<Stock?> GetInstrumentById(string id)
+    public async Task<Stock?> GetById(string id)
     {
         return await _db.Stocks.FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<Stock?> GetInstrumentByTicker(string ticker)
+    public async Task<Stock?> GetByTicker(string ticker)
     {
         return await _db.Stocks.FirstOrDefaultAsync(x => x.Ticker == ticker);
+    }
+
+    public async Task Update(Stock stock)
+    {
+        _db.Entry(stock).State = EntityState.Modified;
+        await _db.SaveChangesAsync();
     }
 }
