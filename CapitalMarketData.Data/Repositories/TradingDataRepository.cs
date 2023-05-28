@@ -13,7 +13,7 @@ public class TradingDataRepository : ITradingDataRepository
         _db = db;
     }
 
-    public async Task<int> AddTradingData(TradingData? data)
+    public async Task<int> Add(TradingData? data)
     {
         ArgumentNullException.ThrowIfNull(data);
 
@@ -26,7 +26,7 @@ public class TradingDataRepository : ITradingDataRepository
         return affected;
     }
 
-    public async Task<TradingData?> GetTodayTradingDataByInstrumentId(string instrumentId)
+    public async Task<TradingData?> GetTodayDataByInstrumentId(string instrumentId)
     {
         return await _db.TradingData.FirstOrDefaultAsync(x => x.Date.Date == DateTime.Today && x.InstrumentId == instrumentId);
     }

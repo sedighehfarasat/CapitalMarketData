@@ -2,6 +2,7 @@ using CapitalMarketData.Data;
 using CapitalMarketData.Data.Repositories;
 using CapitalMarketData.Entities.Contracts;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace CapitalMarketData.WebApi;
 
@@ -17,9 +18,11 @@ public static class HostingExtensions
         builder.Services.AddScoped<ITradingDataRepository, TradingDataRepository>();
 
         builder.Services.AddControllers();
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
+
         builder.Services.AddSwaggerGen();
+
+        builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
         return builder.Build();
     }

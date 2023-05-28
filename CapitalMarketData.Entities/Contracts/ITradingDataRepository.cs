@@ -4,6 +4,6 @@ namespace CapitalMarketData.Entities.Contracts;
 
 public interface ITradingDataRepository
 {
-    Task<TradingData?> GetTodayTradingDataByInstrumentId(string instrumentId);
-    Task<int> AddTradingData(TradingData? data);
+    Task<TradingData?> GetTodayDataByInstrumentId(string instrumentId);
+    Task<int> Add(TradingData? data);
 }

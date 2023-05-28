@@ -113,7 +113,7 @@ public class Worker : BackgroundService
                             tradingData.TradingValue = Convertor.ToNumber(data.mainData.arm);
                             tradingData.TradingVolume = (long?)Convertor.ToNumber(data.mainData.hmo);
                         }
-                        int affected = await _tradingDataRepo.AddTradingData(tradingData);
+                        int affected = await _tradingDataRepo.Add(tradingData);
                         Log.Information($"{affected} row affected for {instrument.Id}");
                     }
                 }

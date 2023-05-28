@@ -1,5 +1,6 @@
+using AutoMapper;
 using CapitalMarketData.Entities.Contracts;
-using CapitalMarketData.Entities.Entities;
+using CapitalMarketData.Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CapitalMarketData.WebApi.Controllers.V1;
@@ -9,15 +10,17 @@ namespace CapitalMarketData.WebApi.Controllers.V1;
 public class StockController : ControllerBase
 {
     private readonly IStockRepository _stockRepo;
+    private readonly IMapper _mapper;
 
-    public StockController(IStockRepository stockRepo)
+    public StockController(IStockRepository stockRepo, IMapper mapper)
     {
         _stockRepo = stockRepo;
+        _mapper = mapper;
     }
 
-    // GET: api/v1/stock/[id]/StockById
-    [HttpGet("{id}/StockById")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Stock))]
+    // GET: api/v1/stock/StockById/[id]
+    [HttpGet("StockById/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StockViewModel))]
     public async Task<IActionResult> GetStockById(string id)
     {
         if (string.IsNullOrEmpty(id))
@@ -33,14 +36,14 @@ public class StockController : ControllerBase
             }
             else
             {
-                return Ok(stock);
+                return Ok(_mapper.Map<StockViewModel>(stock));
             }
         }
     }
 
-    // GET: api/v1/stock/[ticker]/StockByTicker
-    [HttpGet("{ticker}/StockByTicker")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Stock))]
+    // GET: api/v1/stock/StockByTicker/[ticker]
+    [HttpGet("StockByTicker/{ticker}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StockViewModel))]
     public async Task<IActionResult> GetStockByTicker(string ticker)
     {
         if (string.IsNullOrEmpty(ticker))
@@ -56,7 +59,7 @@ public class StockController : ControllerBase
             }
             else
             {
-                return Ok(stock);
+                return Ok(_mapper.Map<StockViewModel>(stock));
             }
         }
     }
