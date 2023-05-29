@@ -10,7 +10,6 @@ public class Stock : Instrument
     }
 
     public Board? Board { get; set; }
-
     public Industry? Industry { get; set; }
 
     public ICollection<TradingData> TradingData { get; set; }
