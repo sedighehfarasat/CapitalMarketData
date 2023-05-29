@@ -28,7 +28,7 @@ public static class TsetmcService
                     insCodes.Add(row);
                 }
             }
-            return insCodes;
+            return insCodes.Distinct().ToList();
         }
     }
 
