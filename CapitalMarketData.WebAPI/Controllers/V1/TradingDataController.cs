@@ -23,21 +23,11 @@ public class TradingDataController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TradingDataViewModel))]
     public async Task<IActionResult> GetTodayTradingDataByInstrumentId(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            return BadRequest();
-        }
-        else
-        {
-            var tradingdata = await _tradingDataRepo.GetTodayDataByInstrumentId(id);
-            if (tradingdata is null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                return Ok(_mapper.Map<TradingDataViewModel>(tradingdata));
-            }
-        }
+        if (string.IsNullOrEmpty(id)) return BadRequest();
+
+        var tradingdata = await _tradingDataRepo.GetTodayDataByInstrumentId(id);
+        if (tradingdata is null) return NotFound();
+
+        return Ok(_mapper.Map<TradingDataViewModel>(tradingdata));
     }
 }

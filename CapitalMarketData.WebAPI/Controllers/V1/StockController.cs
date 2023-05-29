@@ -23,22 +23,12 @@ public class StockController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StockViewModel))]
     public async Task<IActionResult> GetStockById(string id)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            return BadRequest();
-        }
-        else
-        {
-            var stock = await _stockRepo.GetById(id);
-            if (stock is null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                return Ok(_mapper.Map<StockViewModel>(stock));
-            }
-        }
+        if (string.IsNullOrEmpty(id)) return BadRequest();
+
+        var stock = await _stockRepo.GetById(id);
+        if (stock is null) return NotFound();
+
+        return Ok(_mapper.Map<StockViewModel>(stock));
     }
 
     // GET: api/v1/stock/StockByTicker/[ticker]
@@ -46,21 +36,11 @@ public class StockController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StockViewModel))]
     public async Task<IActionResult> GetStockByTicker(string ticker)
     {
-        if (string.IsNullOrEmpty(ticker))
-        {
-            return BadRequest();
-        }
-        else
-        {
-            var stock = await _stockRepo.GetByTicker(ticker + "1");
-            if (stock is null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                return Ok(_mapper.Map<StockViewModel>(stock));
-            }
-        }
+        if (string.IsNullOrEmpty(ticker)) return BadRequest();
+
+        var stock = await _stockRepo.GetByTicker(ticker + "1");
+        if (stock is null) return NotFound();
+
+        return Ok(_mapper.Map<StockViewModel>(stock));
     }
 }
