@@ -201,6 +201,11 @@ public enum Industry
     FinancialIntermediaries = 67,
 
     /// <summary>
+    /// صندوق سرمايه گذاري قابل معامله
+    /// </summary>
+    ETF = 68,
+
+    /// <summary>
     /// انبوه سازي، املاك و مستغلات
     /// </summary>
     RealEstate = 70,
