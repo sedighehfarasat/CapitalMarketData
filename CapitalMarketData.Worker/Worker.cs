@@ -10,12 +10,12 @@ namespace CapitalMarketData.BackgroundWorker;
 
 public class Worker : BackgroundService
 {
-    private readonly IInstrumentRepository _instrumentRepo;
+    private readonly IStockRepository _stockRepo;
     private readonly ITradingDataRepository _tradingDataRepo;
 
-    public Worker(IInstrumentRepository instrumentRepo, ITradingDataRepository tradingDataRepo)
+    public Worker(IStockRepository stockRepo, ITradingDataRepository tradingDataRepo)
     {
-        _instrumentRepo = instrumentRepo;
+        _stockRepo = stockRepo;
         _tradingDataRepo = tradingDataRepo;
     }
 
@@ -23,6 +23,8 @@ public class Worker : BackgroundService
     {
         Console.WriteLine("Do You Want To Update Instument List? Y/N");
         var isUpdateNeeded = Console.ReadLine()!;
+
+        #region Updating Instruments
         if (isUpdateNeeded.ToLower() == "y")
         {
             Companies? companies = await TseService.GetStockList();
@@ -34,22 +36,49 @@ public class Worker : BackgroundService
 
             foreach (var category in companies.companies)
             {
-                foreach (var stock in category.list)
+                foreach (var instrument in category.list)
                 {
-                    var instrument = new Instrument()
+                    var stock = new Entities.Entities.Stock()
                     {
-                        Id = stock.ic,
-                        Ticker = stock.sy,
-                        Name = stock.n,
+                        Id = instrument.ic,
+                        Ticker = instrument.sy,
+                        Name = instrument.n,
                     };
 
-                    int affected = await _instrumentRepo.AddInstrument(instrument);
-                    Log.Information($"{affected} row affected for {instrument.Id}");
+                    int affected = await _stockRepo.Add(stock);
+                    Log.Information($"{affected} row affected for {stock.Id}");
                 }
             }
-        }
 
-        var instruments = await _instrumentRepo.GetAll();
+            var insCodes = await TsetmcService.GetInsCodesFromFile();
+            foreach (var code in insCodes)
+            {
+                try
+                {
+                    var data = await TsetmcService.GetIntrumentInfo(code);
+                    if (data is not null)
+                    {
+                        var instrument = await _stockRepo.GetById(data.instrumentIdentity.instrumentID);
+                        if (instrument is not null)
+                        {
+                            instrument.InsCode = code;
+                            //instrument.Board = ;
+                            instrument.Industry = (Industry)int.Parse(data.instrumentIdentity.sector.cSecVal.Trim());
+                            await _stockRepo.Update(instrument);
+                        }
+                    }
+                }
+                catch (HttpRequestException)
+                {
+                    Log.Information($"There is no instrument with this INS code: {code}");
+                }
+
+                await Task.Delay(1000, stoppingToken);
+            }
+        }
+        #endregion
+
+        var instruments = await _stockRepo.GetAll();
         if (!instruments.Any())
         {
             Log.Error($"No Instrument Found!");
@@ -84,7 +113,7 @@ public class Worker : BackgroundService
                             tradingData.TradingValue = Convertor.ToNumber(data.mainData.arm);
                             tradingData.TradingVolume = (long?)Convertor.ToNumber(data.mainData.hmo);
                         }
-                        int affected = await _tradingDataRepo.AddTradingData(tradingData);
+                        int affected = await _tradingDataRepo.Add(tradingData);
                         Log.Information($"{affected} row affected for {instrument.Id}");
                     }
                 }
