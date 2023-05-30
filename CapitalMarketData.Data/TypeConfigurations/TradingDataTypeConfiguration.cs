@@ -56,10 +56,10 @@ public class TradingDataTypeConfiguration : IEntityTypeConfiguration<TradingData
         builder.Property(x => x.TradingVolume)
             .HasColumnType("bigint");
 
-        builder.HasOne(x => x.Stock)
-                .WithMany(x => x.TradingData)
-                .HasForeignKey(x => x.InstrumentId)
-                .OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne(x => x.Instrument)
+            .WithMany(x => x.TradingData)
+            .HasForeignKey(x => x.InstrumentId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(x => x.InstrumentId);
     }

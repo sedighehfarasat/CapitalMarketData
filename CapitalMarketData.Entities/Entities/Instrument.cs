@@ -19,4 +19,7 @@ public abstract class Instrument
     /// Gets or sets the type of instrument (yval)
     /// </summary>
     public int? Type { get; set; }
+
+    private HashSet<TradingData> _tradingData = new();
+    public ICollection<TradingData> TradingData => _tradingData;
 }

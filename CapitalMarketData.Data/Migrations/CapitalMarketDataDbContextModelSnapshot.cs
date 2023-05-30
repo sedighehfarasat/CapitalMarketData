@@ -22,12 +22,16 @@ namespace CapitalMarketData.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CapitalMarketData.Entities.Entities.ETF", b =>
+            modelBuilder.Entity("CapitalMarketData.Entities.Entities.Instrument", b =>
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(32)
                         .HasColumnType("nvarchar(32)")
                         .HasColumnOrder(0);
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("InsCode")
                         .IsRequired()
@@ -54,7 +58,11 @@ namespace CapitalMarketData.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ETFs", (string)null);
+                    b.ToTable("Instruments", (string)null);
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Instrument");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("CapitalMarketData.Entities.Entities.NAV", b =>
@@ -76,49 +84,6 @@ namespace CapitalMarketData.Data.Migrations
                     b.ToTable("NAVs", (string)null);
                 });
 
-            modelBuilder.Entity("CapitalMarketData.Entities.Entities.Stock", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)")
-                        .HasColumnOrder(0);
-
-                    b.Property<int?>("Board")
-                        .HasColumnType("int")
-                        .HasColumnOrder(5);
-
-                    b.Property<int?>("Industry")
-                        .HasColumnType("int")
-                        .HasColumnOrder(6);
-
-                    b.Property<string>("InsCode")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)")
-                        .HasColumnOrder(1);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
-                        .HasColumnOrder(3);
-
-                    b.Property<string>("Ticker")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)")
-                        .HasColumnOrder(2);
-
-                    b.Property<int?>("Type")
-                        .IsRequired()
-                        .HasColumnType("int")
-                        .HasColumnOrder(4);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Stocks", (string)null);
-                });
-
             modelBuilder.Entity("CapitalMarketData.Entities.Entities.TradingData", b =>
                 {
                     b.Property<string>("InstrumentId")
@@ -130,9 +95,6 @@ namespace CapitalMarketData.Data.Migrations
 
                     b.Property<decimal?>("ClosingPrice")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("ETFId")
-                        .HasColumnType("nvarchar(32)");
 
                     b.Property<decimal?>("HighestPrice")
                         .HasColumnType("decimal(18,2)");
@@ -169,11 +131,31 @@ namespace CapitalMarketData.Data.Migrations
 
                     b.HasKey("InstrumentId", "Date");
 
-                    b.HasIndex("ETFId");
-
                     b.HasIndex("InstrumentId");
 
                     b.ToTable("TradingData", (string)null);
+                });
+
+            modelBuilder.Entity("CapitalMarketData.Entities.Entities.ETF", b =>
+                {
+                    b.HasBaseType("CapitalMarketData.Entities.Entities.Instrument");
+
+                    b.HasDiscriminator().HasValue("ETF");
+                });
+
+            modelBuilder.Entity("CapitalMarketData.Entities.Entities.Stock", b =>
+                {
+                    b.HasBaseType("CapitalMarketData.Entities.Entities.Instrument");
+
+                    b.Property<int?>("Board")
+                        .HasColumnType("int")
+                        .HasColumnOrder(5);
+
+                    b.Property<int?>("Industry")
+                        .HasColumnType("int")
+                        .HasColumnOrder(6);
+
+                    b.HasDiscriminator().HasValue("Stock");
                 });
 
             modelBuilder.Entity("CapitalMarketData.Entities.Entities.NAV", b =>
@@ -189,31 +171,23 @@ namespace CapitalMarketData.Data.Migrations
 
             modelBuilder.Entity("CapitalMarketData.Entities.Entities.TradingData", b =>
                 {
-                    b.HasOne("CapitalMarketData.Entities.Entities.ETF", "ETF")
-                        .WithMany("TradingData")
-                        .HasForeignKey("ETFId");
-
-                    b.HasOne("CapitalMarketData.Entities.Entities.Stock", "Stock")
+                    b.HasOne("CapitalMarketData.Entities.Entities.Instrument", "Instrument")
                         .WithMany("TradingData")
                         .HasForeignKey("InstrumentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ETF");
+                    b.Navigation("Instrument");
+                });
 
-                    b.Navigation("Stock");
+            modelBuilder.Entity("CapitalMarketData.Entities.Entities.Instrument", b =>
+                {
+                    b.Navigation("TradingData");
                 });
 
             modelBuilder.Entity("CapitalMarketData.Entities.Entities.ETF", b =>
                 {
                     b.Navigation("NAV");
-
-                    b.Navigation("TradingData");
-                });
-
-            modelBuilder.Entity("CapitalMarketData.Entities.Entities.Stock", b =>
-                {
-                    b.Navigation("TradingData");
                 });
 #pragma warning restore 612, 618
         }

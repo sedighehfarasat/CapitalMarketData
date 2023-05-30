@@ -12,22 +12,7 @@ namespace CapitalMarketData.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ETFs",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
-                    InsCode = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
-                    Ticker = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ETFs", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Stocks",
+                name: "Instruments",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
@@ -36,11 +21,12 @@ namespace CapitalMarketData.Data.Migrations
                     Name = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
                     Board = table.Column<int>(type: "int", nullable: true),
-                    Industry = table.Column<int>(type: "int", nullable: true)
+                    Industry = table.Column<int>(type: "int", nullable: true),
+                    Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Stocks", x => x.Id);
+                    table.PrimaryKey("PK_Instruments", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -55,9 +41,9 @@ namespace CapitalMarketData.Data.Migrations
                 {
                     table.PrimaryKey("PK_NAVs", x => new { x.InstrumentId, x.Date });
                     table.ForeignKey(
-                        name: "FK_NAVs_ETFs_InstrumentId",
+                        name: "FK_NAVs_Instruments_InstrumentId",
                         column: x => x.InstrumentId,
-                        principalTable: "ETFs",
+                        principalTable: "Instruments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -79,21 +65,15 @@ namespace CapitalMarketData.Data.Migrations
                     LowerBoundPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     NumberOfTrades = table.Column<int>(type: "int", nullable: true),
                     TradingValue = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    TradingVolume = table.Column<long>(type: "bigint", nullable: true),
-                    ETFId = table.Column<string>(type: "nvarchar(32)", nullable: true)
+                    TradingVolume = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TradingData", x => new { x.InstrumentId, x.Date });
                     table.ForeignKey(
-                        name: "FK_TradingData_ETFs_ETFId",
-                        column: x => x.ETFId,
-                        principalTable: "ETFs",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_TradingData_Stocks_InstrumentId",
+                        name: "FK_TradingData_Instruments_InstrumentId",
                         column: x => x.InstrumentId,
-                        principalTable: "Stocks",
+                        principalTable: "Instruments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -102,11 +82,6 @@ namespace CapitalMarketData.Data.Migrations
                 name: "IX_NAVs_InstrumentId",
                 table: "NAVs",
                 column: "InstrumentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TradingData_ETFId",
-                table: "TradingData",
-                column: "ETFId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TradingData_InstrumentId",
@@ -124,10 +99,7 @@ namespace CapitalMarketData.Data.Migrations
                 name: "TradingData");
 
             migrationBuilder.DropTable(
-                name: "ETFs");
-
-            migrationBuilder.DropTable(
-                name: "Stocks");
+                name: "Instruments");
         }
     }
 }
