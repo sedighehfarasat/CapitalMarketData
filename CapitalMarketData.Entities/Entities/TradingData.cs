@@ -38,4 +38,5 @@ public class TradingData
     public long? TradingVolume { get; set; }
 
     public Stock? Stock { get; set; }
+    public ETF? ETF { get; set; }
 }

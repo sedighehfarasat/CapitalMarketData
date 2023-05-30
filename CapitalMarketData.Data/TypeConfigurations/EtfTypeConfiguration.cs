@@ -4,11 +4,11 @@ using CapitalMarketData.Entities.Entities;
 
 namespace CapitalMarketData.Data.TypeConfigurations;
 
-public class StockTypeConfiguration : IEntityTypeConfiguration<Stock>
+public class EtfTypeConfiguration : IEntityTypeConfiguration<ETF>
 {
-    private const string TableName = "Stocks";
+    private const string TableName = "ETFs";
 
-    public void Configure(EntityTypeBuilder<Stock> builder)
+    public void Configure(EntityTypeBuilder<ETF> builder)
     {
         builder.ToTable(TableName);
 
@@ -37,11 +37,5 @@ public class StockTypeConfiguration : IEntityTypeConfiguration<Stock>
         builder.Property(x => x.Type)
             .IsRequired()
             .HasColumnOrder(4);
-
-        builder.Property(x => x.Board)
-            .HasColumnOrder(5);
-
-        builder.Property(x => x.Industry)
-            .HasColumnOrder(6);
     }
 }

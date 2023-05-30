@@ -2,7 +2,6 @@ using CapitalMarketData.Entities.Contracts;
 using CapitalMarketData.Entities.Entities;
 using CapitalMarketData.Entities.Enums;
 using CapitalMarketData.Worker.Helper;
-using CapitalMarketData.Worker.Models;
 using CapitalMarketData.Worker.Services;
 using Serilog;
 
@@ -12,69 +11,26 @@ public class Worker : BackgroundService
 {
     private readonly IStockRepository _stockRepo;
     private readonly ITradingDataRepository _tradingDataRepo;
+    private readonly UpdateInstruments _updateInstruments;
 
-    public Worker(IStockRepository stockRepo, ITradingDataRepository tradingDataRepo)
+    public Worker(IStockRepository stockRepo, ITradingDataRepository tradingDataRepo, UpdateInstruments updateInstruments)
     {
         _stockRepo = stockRepo;
         _tradingDataRepo = tradingDataRepo;
+        _updateInstruments = updateInstruments;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        Console.WriteLine("Do You Want To Update Instument List? Y/N");
+        Console.WriteLine("Do You Want To Update The List Of Instuments? Y/N");
         var isUpdateNeeded = Console.ReadLine()!;
 
         #region Updating Instruments
         if (isUpdateNeeded.ToLower() == "y")
         {
-            Companies? companies = await TseService.GetStockList();
-            if (companies is null)
-            {
-                Log.Error($"No List Of Companies!");
-                Environment.Exit(1);
-            }
-
-            foreach (var category in companies.companies)
-            {
-                foreach (var instrument in category.list)
-                {
-                    var stock = new Entities.Entities.Stock()
-                    {
-                        Id = instrument.ic,
-                        Ticker = instrument.sy,
-                        Name = instrument.n,
-                    };
-
-                    int affected = await _stockRepo.Add(stock);
-                    Log.Information($"{affected} row affected for {stock.Id}");
-                }
-            }
-
-            var insCodes = await TsetmcService.GetInsCodesFromFile();
-            foreach (var code in insCodes)
-            {
-                try
-                {
-                    var data = await TsetmcService.GetIntrumentInfo(code);
-                    if (data is not null)
-                    {
-                        var instrument = await _stockRepo.GetById(data.instrumentIdentity.instrumentID);
-                        if (instrument is not null)
-                        {
-                            instrument.InsCode = code;
-                            //instrument.Board = ;
-                            instrument.Industry = (Industry)int.Parse(data.instrumentIdentity.sector.cSecVal.Trim());
-                            await _stockRepo.Update(instrument);
-                        }
-                    }
-                }
-                catch (HttpRequestException)
-                {
-                    Log.Information($"There is no instrument with this INS code: {code}");
-                }
-
-                await Task.Delay(1000, stoppingToken);
-            }
+            Log.Information("The List Of Instuments Is Updating ...");
+            await _updateInstruments.Update();
+            Log.Information("The List Of Instuments Updated.");
         }
         #endregion
 
