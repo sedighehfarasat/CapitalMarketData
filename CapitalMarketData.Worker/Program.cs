@@ -2,6 +2,7 @@ using CapitalMarketData.BackgroundWorker;
 using CapitalMarketData.Data;
 using CapitalMarketData.Data.Repositories;
 using CapitalMarketData.Entities.Contracts;
+using CapitalMarketData.Worker.Services;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Reflection;
@@ -30,7 +31,10 @@ try
         });
 
         services.AddScoped<IStockRepository, StockRepository>();
+        services.AddScoped<IEtfRepository, EtfRepository>();
         services.AddScoped<ITradingDataRepository, TradingDataRepository>();
+
+        services.AddSingleton<UpdateInstruments>();
 
         services.AddHostedService<Worker>();
     })

@@ -20,6 +20,7 @@ public class StockTypeConfiguration : IEntityTypeConfiguration<Stock>
             .HasColumnOrder(0);
 
         builder.Property(x => x.InsCode)
+            .IsRequired()
             .HasMaxLength(32)
             .HasColumnOrder(1);
 
@@ -29,13 +30,18 @@ public class StockTypeConfiguration : IEntityTypeConfiguration<Stock>
             .HasColumnOrder(2);
 
         builder.Property(x => x.Name)
+            .IsRequired()
             .HasMaxLength(64)
             .HasColumnOrder(3);
 
-        builder.Property(x => x.Board)
+        builder.Property(x => x.Type)
+            .IsRequired()
             .HasColumnOrder(4);
 
-        builder.Property(x => x.Industry)
+        builder.Property(x => x.Board)
             .HasColumnOrder(5);
+
+        builder.Property(x => x.Industry)
+            .HasColumnOrder(6);
     }
 }

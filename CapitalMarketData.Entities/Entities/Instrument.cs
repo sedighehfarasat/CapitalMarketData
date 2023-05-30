@@ -15,4 +15,8 @@ public abstract class Instrument
     /// Gets or sets the full name of the instrument.
     /// </summary>
     public string? Name { get; set; }
+    /// <summary>
+    /// Gets or sets the type of instrument (yval)
+    /// </summary>
+    public int? Type { get; set; }
 }

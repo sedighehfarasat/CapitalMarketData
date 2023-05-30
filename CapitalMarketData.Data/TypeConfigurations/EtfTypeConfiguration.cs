@@ -20,6 +20,7 @@ public class EtfTypeConfiguration : IEntityTypeConfiguration<ETF>
             .HasColumnOrder(0);
 
         builder.Property(x => x.InsCode)
+            .IsRequired()
             .HasMaxLength(32)
             .HasColumnOrder(1);
 
@@ -29,7 +30,12 @@ public class EtfTypeConfiguration : IEntityTypeConfiguration<ETF>
             .HasColumnOrder(2);
 
         builder.Property(x => x.Name)
+            .IsRequired()
             .HasMaxLength(64)
             .HasColumnOrder(3);
+
+        builder.Property(x => x.Type)
+            .IsRequired()
+            .HasColumnOrder(4);
     }
 }
