@@ -4,18 +4,21 @@ using CapitalMarketData.Entities.Enums;
 using CapitalMarketData.Worker.Helper;
 using CapitalMarketData.Worker.Services;
 using Serilog;
+using System.Linq;
 
 namespace CapitalMarketData.BackgroundWorker;
 
 public class Worker : BackgroundService
 {
     private readonly IStockRepository _stockRepo;
+    private readonly IEtfRepository _etfRepo;
     private readonly ITradingDataRepository _tradingDataRepo;
     private readonly UpdateInstruments _updateInstruments;
 
-    public Worker(IStockRepository stockRepo, ITradingDataRepository tradingDataRepo, UpdateInstruments updateInstruments)
+    public Worker(IStockRepository stockRepo, IEtfRepository etfRepo, ITradingDataRepository tradingDataRepo, UpdateInstruments updateInstruments)
     {
         _stockRepo = stockRepo;
+        _etfRepo = etfRepo;
         _tradingDataRepo = tradingDataRepo;
         _updateInstruments = updateInstruments;
     }
@@ -34,14 +37,18 @@ public class Worker : BackgroundService
         }
         #endregion
 
-        var instruments = await _stockRepo.GetAll();
-        if (!instruments.Any())
+        List<Stock> stocks = await _stockRepo.GetAll();
+        List<Instrument> convertedStocks = stocks.ConvertAll(x => x as Instrument);
+        List<ETF> etfs = await _etfRepo.GetAll();
+        List<Instrument> convertedEtfs = etfs.ConvertAll(x => x as Instrument);
+        IEnumerable<Instrument> Instruments = convertedStocks.Union(convertedEtfs);
+        if (!Instruments.Any())
         {
             Log.Error($"No Instrument Found!");
             await StopAsync(stoppingToken);
         }
 
-        foreach (var instrument in instruments)
+        foreach (var instrument in Instruments)
         {
             if (instrument.Id is not null)
             {
@@ -82,7 +89,7 @@ public class Worker : BackgroundService
                     Log.Error($"Other Exception Caught On {instrument.Id}: {e.Message}");
                 }
 
-                await Task.Delay(3000, stoppingToken);
+                await Task.Delay(1000, stoppingToken);
             }
         }
     }

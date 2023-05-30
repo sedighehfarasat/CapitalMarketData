@@ -26,7 +26,7 @@ public class StockRepository : IStockRepository
         return affected;
     }
 
-    public async Task<IEnumerable<Stock>> GetAll()
+    public async Task<List<Stock>> GetAll()
     {
         return await _db.Stocks.ToListAsync();
     }

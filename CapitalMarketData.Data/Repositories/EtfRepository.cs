@@ -24,7 +24,7 @@ public class EtfRepository : IEtfRepository
         }
     }
 
-    public async Task<IEnumerable<ETF>> GetAll()
+    public async Task<List<ETF>> GetAll()
     {
         return await _db.ETFs.ToListAsync();
     }
