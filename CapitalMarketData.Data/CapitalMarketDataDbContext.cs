@@ -19,6 +19,7 @@ public class CapitalMarketDataDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.UseCollation("Persian_100_CI_AI_KS_WS_SC");
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 }

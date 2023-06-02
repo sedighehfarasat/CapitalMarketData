@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CapitalMarketData.Data.Migrations
 {
     [DbContext(typeof(CapitalMarketDataDbContext))]
-    [Migration("20230530130710_Init")]
+    [Migration("20230602074534_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -20,6 +20,7 @@ namespace CapitalMarketData.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .UseCollation("Persian_100_CI_AI_KS_WS_SC")
                 .HasAnnotation("ProductVersion", "7.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 

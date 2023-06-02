@@ -15,6 +15,7 @@ public static class HostingExtensions
             options.UseSqlServer(connectionString));
 
         builder.Services.AddScoped<IStockRepository, StockRepository>();
+        builder.Services.AddScoped<IEtfRepository, EtfRepository>();
         builder.Services.AddScoped<ITradingDataRepository, TradingDataRepository>();
 
         builder.Services.AddControllers();
