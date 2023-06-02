@@ -17,6 +17,7 @@ namespace CapitalMarketData.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .UseCollation("Persian_100_CI_AI_KS_WS_SC")
                 .HasAnnotation("ProductVersion", "7.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
