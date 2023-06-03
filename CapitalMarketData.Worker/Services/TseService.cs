@@ -23,20 +23,4 @@ public static class TseService
         Trade? instrument = JsonSerializer.Deserialize<Trade>(responseString);
         return instrument;
     }
-
-    /// <summary>
-    /// Gets list of stocks available in TSE from tse.ir API.
-    /// </summary>
-    /// <returns>List of stock information as Companies type</returns>
-    public static async Task<Companies?> GetStockList()
-    {
-        var url = @"https://tse.ir/json/Listing/ListingByName1.json";
-        HttpClient client = new();
-        HttpResponseMessage response = await client.GetAsync(url);
-        // TODO: Retry sending request in case of failing.
-        response.EnsureSuccessStatusCode();
-        string responseString = await response.Content.ReadAsStringAsync();
-        Companies? companies = JsonSerializer.Deserialize<Companies>(responseString);
-        return companies;
-    }
 }

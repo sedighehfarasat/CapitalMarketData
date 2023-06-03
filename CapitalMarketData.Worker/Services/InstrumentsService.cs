@@ -6,12 +6,12 @@ using Serilog;
 
 namespace CapitalMarketData.Worker.Services;
 
-public class UpdateInstruments
+public class InstrumentsService
 {
     private readonly IEtfRepository _etfRepo;
     private readonly IStockRepository _stockRepo;
 
-    public UpdateInstruments(IEtfRepository etfRepo, IStockRepository stockRepo)
+    public InstrumentsService(IEtfRepository etfRepo, IStockRepository stockRepo)
     {
         _etfRepo = etfRepo;
         _stockRepo = stockRepo;
@@ -19,14 +19,15 @@ public class UpdateInstruments
 
     public async Task Update()
     {
-        var insCodes = await TsetmcService.GetInsCodesFromFile();
+        var insCodes = await TsetmcService.GetInsCodes();
         foreach (var code in insCodes)
         {
             try
             {
                 var data = await TsetmcService.GetIntrumentInfo(code) ?? throw new Exception();
 
-                if (int.Parse(data.instrumentIdentity.sector.cSecVal) == 68 && (int.Parse(data.instrumentIdentity.yVal) == 305 || (int.Parse(data.instrumentIdentity.yVal) == 380)))
+                if ((InstrumentType)int.Parse(data.instrumentIdentity.yVal) is InstrumentType.Etf || 
+                    (InstrumentType)int.Parse(data.instrumentIdentity.yVal) is InstrumentType.CommodityEtf)
                 {
                     await UpdateETFs(data, code);
                 }
@@ -53,7 +54,9 @@ public class UpdateInstruments
                 InsCode = code,
                 Ticker = data.instrumentIdentity.lVal18AFC,
                 Name = data.instrumentIdentity.lVal30,
-                Type = int.Parse(data.instrumentIdentity.yVal),
+                Type = (InstrumentType)int.Parse(data.instrumentIdentity.yVal),
+                Sector = (Entities.Enums.Sector)int.Parse(data.instrumentIdentity.sector.cSecVal),
+                Subsector = (Entities.Enums.Subsector)data.instrumentIdentity.subSector.cSoSecVal,
             };
 
             await _etfRepo.Add(newEtf);
@@ -71,9 +74,9 @@ public class UpdateInstruments
                 InsCode = code,
                 Ticker = data.instrumentIdentity.lVal18AFC,
                 Name = data.instrumentIdentity.lVal30,
-                Type = int.Parse(data.instrumentIdentity.yVal),
+                Type = (InstrumentType)int.Parse(data.instrumentIdentity.yVal),
                 //Board = ,
-                Industry = (Industry)int.Parse(data.instrumentIdentity.sector.cSecVal),
+                Sector = (Entities.Enums.Sector)int.Parse(data.instrumentIdentity.sector.cSecVal),
             };
 
             await _stockRepo.Add(newStock);
