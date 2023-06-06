@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CapitalMarketData.Worker": {
+      "commandName": "Project",
+      "dotnetRunMessages": true
+    }
+  }
+}
