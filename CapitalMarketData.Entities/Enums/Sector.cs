@@ -3,7 +3,7 @@
 /// <summary>
 /// TSE industry classification is based on ISIC standards.
 /// </summary>
-public enum Industry
+public enum Sector
 {
     /// <summary>
     /// زراعت و خدمات وابسته

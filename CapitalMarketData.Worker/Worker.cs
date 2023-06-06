@@ -1,26 +1,24 @@
 using CapitalMarketData.Entities.Contracts;
 using CapitalMarketData.Entities.Entities;
-using CapitalMarketData.Entities.Enums;
 using CapitalMarketData.Worker.Helper;
 using CapitalMarketData.Worker.Services;
 using Serilog;
-using System.Linq;
 
 namespace CapitalMarketData.BackgroundWorker;
 
 public class Worker : BackgroundService
 {
-    private readonly IStockRepository _stockRepo;
-    private readonly IEtfRepository _etfRepo;
+    private readonly IInstrumentRepository _instrumentRepo;
     private readonly ITradingDataRepository _tradingDataRepo;
-    private readonly UpdateInstruments _updateInstruments;
+    private readonly IIndiInstiTradingDataRepository _indiInstiDataRepo;
+    private readonly InstrumentsService _instrumentsService;
 
-    public Worker(IStockRepository stockRepo, IEtfRepository etfRepo, ITradingDataRepository tradingDataRepo, UpdateInstruments updateInstruments)
+    public Worker(IInstrumentRepository instrumentRepo, ITradingDataRepository tradingDataRepo, IIndiInstiTradingDataRepository indiInstiDataRepo, InstrumentsService instrumentsService)
     {
-        _stockRepo = stockRepo;
-        _etfRepo = etfRepo;
+        _instrumentRepo = instrumentRepo;
         _tradingDataRepo = tradingDataRepo;
-        _updateInstruments = updateInstruments;
+        _indiInstiDataRepo = indiInstiDataRepo;
+        _instrumentsService = instrumentsService;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -32,16 +30,12 @@ public class Worker : BackgroundService
         if (isUpdateNeeded.ToLower() == "y")
         {
             Log.Information("The List Of Instuments Is Updating ...");
-            await _updateInstruments.Update();
+            await _instrumentsService.Update();
             Log.Information("The List Of Instuments Updated.");
         }
         #endregion
 
-        List<Stock> stocks = await _stockRepo.GetAll();
-        List<Instrument> convertedStocks = stocks.ConvertAll(x => x as Instrument);
-        List<ETF> etfs = await _etfRepo.GetAll();
-        List<Instrument> convertedEtfs = etfs.ConvertAll(x => x as Instrument);
-        IEnumerable<Instrument> Instruments = convertedStocks.Union(convertedEtfs);
+        List<Instrument> Instruments = await _instrumentRepo.GetAll();
         if (!Instruments.Any())
         {
             Log.Error($"No Instrument Found!");
@@ -50,35 +44,61 @@ public class Worker : BackgroundService
 
         foreach (var instrument in Instruments)
         {
-            if (instrument.Id is not null)
+            if (instrument.Id is not null && instrument.InsCode is not null)
             {
                 try
                 {
-                    var data = await TseService.FetchLiveData(instrument.Id);
-                    if (data is not null)
+                    #region Adding Trading Data
+                    var priceData = await TsetmcService.GetPriceData(instrument.InsCode);
+                    var stateData = await TsetmcService.GetInstrumentState(instrument.InsCode);
+                    var staticThresholdData = await TsetmcService.GetStaticThresholds(instrument.InsCode);
+                    if (priceData is not null && stateData is not null && staticThresholdData is not null)
                     {
                         TradingData tradingData = new()
                         {
                             InstrumentId = instrument.Id,
-                            Status = Convertor.ToStatusEnum(data.header[0].state),
+                            Status = Convertor.ToStatusEnum(stateData.cEtaval),
+                            OpeningPrice = (decimal)priceData.closingPriceDaily.priceFirst,
+                            HighestPrice = (decimal)priceData.closingPriceDaily.priceMax,
+                            LowestPrice = (decimal)priceData.closingPriceDaily.priceMin,
+                            LastPrice = (decimal)priceData.closingPriceDaily.pDrCotVal,
+                            ClosingPrice = (decimal)priceData.closingPriceDaily.pClosing,
+                            PreviousClosingPrice = (decimal)priceData.closingPriceDaily.priceYesterday,
+                            UpperBoundPrice = (decimal)staticThresholdData.psGelStaMax,
+                            LowerBoundPrice = (decimal)staticThresholdData.psGelStaMin,
+                            NumberOfTrades = (int)priceData.closingPriceDaily.zTotTran,
+                            TradingValue = (decimal)priceData.closingPriceDaily.qTotCap,
+                            TradingVolume = (long)priceData.closingPriceDaily.qTotTran5J,
                         };
-                        if (tradingData.Status == Status.Trading)
-                        {
-                            tradingData.OpeningPrice = decimal.Parse(data.mainData.agh);
-                            tradingData.HighestPrice = decimal.Parse(data.mainData.bt.u);
-                            tradingData.LowestPrice = decimal.Parse(data.mainData.bt.d);
-                            tradingData.LastPrice = decimal.Parse(data.header[1].am);
-                            tradingData.ClosingPrice = decimal.Parse(data.mainData.ghp.v);
-                            tradingData.PreviousClosingPrice = decimal.Parse(data.mainData.rgh);
-                            tradingData.UpperBoundPrice = decimal.Parse(data.mainData.bm.u);
-                            tradingData.LowerBoundPrice = decimal.Parse(data.mainData.bm.d);
-                            tradingData.NumberOfTrades = int.Parse(data.mainData.dm.Replace(",", string.Empty));
-                            tradingData.TradingValue = Convertor.ToNumber(data.mainData.arm);
-                            tradingData.TradingVolume = (long?)Convertor.ToNumber(data.mainData.hmo);
-                        }
-                        int affected = await _tradingDataRepo.Add(tradingData);
-                        Log.Information($"{affected} row affected for {instrument.Id}");
+
+                        await _tradingDataRepo.Add(tradingData);
                     }
+
+                    Log.Information($"Trading Data Added For {instrument.Id}.");
+                    #endregion
+
+                    #region Add InstiIndi Trading Data
+                    var clientTypeData = await TsetmcService.GetInstitutionalIndividualData(instrument.InsCode);
+                    if (clientTypeData is not null)
+                    {
+                        IndiInstiTradingData indiInstiData = new()
+                        {
+                            InstrumentId = instrument.Id,
+                            IndividualNumberOfTrades_BuySide = clientTypeData.clientType.buy_CountI,
+                            IndividualNumberOfTrades_SellSide = clientTypeData.clientType.sell_CountI,
+                            IndividualTradingVolume_BuySide = (long)clientTypeData.clientType.buy_I_Volume,
+                            IndividualTradingVolume_SellSide = (long)clientTypeData.clientType.sell_I_Volume,
+                            InstitutionalNumberOfTrades_BuySide = clientTypeData.clientType.buy_CountN,
+                            InstitutionalNumberOfTrades_SellSide = clientTypeData.clientType.sell_CountN,
+                            InstitutionalTradingVolume_BuySide = (long)clientTypeData.clientType.buy_N_Volume,
+                            InstitutionalTradingVolume_SellSide = (long)clientTypeData.clientType.sell_N_Volume,
+                        };
+
+                        await _indiInstiDataRepo.Add(indiInstiData);
+                    }
+
+                    Log.Information($"Individual And Institutional Trading Data Added For {instrument.Id}.");
+                    #endregion
                 }
                 catch (HttpRequestException e)
                 {

@@ -8,25 +8,12 @@ public static class Convertor
     {
         return str switch
         {
-            "مجاز" => Status.Trading,
-            "ممنوع-متوقف" => Status.Halted,
+            "A " => Status.Trading,
+            "IS" => Status.Halted,
+            "I " => Status.Suspended,
+            "AR" => Status.EnteringOrder,
+            "AS" => Status.RemovingOrder,
             _ => null,
         };
-    }
-
-    public static decimal? ToNumber(string str)
-    {
-        if (str.Contains('M'))
-        {
-            return decimal.Parse(str.Split(" ")[0]) * 1_000_000;
-        }
-        else if (str.Contains('B'))
-        {
-            return decimal.Parse(str.Split(" ")[0]) * 1_000_000_000;
-        }
-        else
-        {
-            return decimal.Parse(str);
-        }
     }
 }

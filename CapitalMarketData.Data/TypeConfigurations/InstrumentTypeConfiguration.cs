@@ -1,4 +1,5 @@
 ﻿using CapitalMarketData.Entities.Entities;
+using CapitalMarketData.Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -18,26 +19,30 @@ public class InstrumentTypeConfiguration : IEntityTypeConfiguration<Instrument>
 
         builder.Property(x => x.Id)
             .IsRequired()
-            .HasMaxLength(32)
-            .HasColumnOrder(0);
+            .HasMaxLength(32);
 
         builder.Property(x => x.InsCode)
             .IsRequired()
-            .HasMaxLength(32)
-            .HasColumnOrder(1);
+            .HasMaxLength(32);
 
         builder.Property(x => x.Ticker)
             .IsRequired()
-            .HasMaxLength(32)
-            .HasColumnOrder(2);
+            .HasMaxLength(32);
 
         builder.Property(x => x.Name)
             .IsRequired()
-            .HasMaxLength(64)
-            .HasColumnOrder(3);
+            .HasMaxLength(64);
 
         builder.Property(x => x.Type)
-            .IsRequired()
-            .HasColumnOrder(4);
+            .HasConversion(x => x.ToString(), x => (InstrumentType)Enum.Parse(typeof(InstrumentType), x))
+            .HasMaxLength(256);
+
+        builder.Property(x => x.Sector)
+            .HasConversion(x => x.ToString(), x => (Sector)Enum.Parse(typeof(Sector), x))
+            .HasMaxLength(256);
+
+        builder.Property(x => x.Subsector)
+            .HasConversion(x => x.ToString(), x => (Subsector)Enum.Parse(typeof(Subsector), x))
+            .HasMaxLength(256);
     }
 }

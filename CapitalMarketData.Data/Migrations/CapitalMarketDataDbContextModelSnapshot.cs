@@ -23,12 +23,51 @@ namespace CapitalMarketData.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("CapitalMarketData.Entities.Entities.IndiInstiTradingData", b =>
+                {
+                    b.Property<string>("InstrumentId")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("IndividualNumberOfTrades_BuySide")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("IndividualNumberOfTrades_SellSide")
+                        .HasColumnType("int");
+
+                    b.Property<long?>("IndividualTradingVolume_BuySide")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("IndividualTradingVolume_SellSide")
+                        .HasColumnType("bigint");
+
+                    b.Property<int?>("InstitutionalNumberOfTrades_BuySide")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("InstitutionalNumberOfTrades_SellSide")
+                        .HasColumnType("int");
+
+                    b.Property<long?>("InstitutionalTradingVolume_BuySide")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("InstitutionalTradingVolume_SellSide")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("InstrumentId", "Date");
+
+                    b.HasIndex("InstrumentId");
+
+                    b.ToTable("IndividualInstitutionalTradingData", (string)null);
+                });
+
             modelBuilder.Entity("CapitalMarketData.Entities.Entities.Instrument", b =>
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)")
-                        .HasColumnOrder(0);
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
@@ -37,25 +76,29 @@ namespace CapitalMarketData.Data.Migrations
                     b.Property<string>("InsCode")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)")
-                        .HasColumnOrder(1);
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)")
-                        .HasColumnOrder(3);
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("Sector")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("Subsector")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("Ticker")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)")
-                        .HasColumnOrder(2);
+                        .HasColumnType("nvarchar(32)");
 
-                    b.Property<int?>("Type")
-                        .IsRequired()
-                        .HasColumnType("int")
-                        .HasColumnOrder(4);
+                    b.Property<string>("Type")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
@@ -149,14 +192,20 @@ namespace CapitalMarketData.Data.Migrations
                     b.HasBaseType("CapitalMarketData.Entities.Entities.Instrument");
 
                     b.Property<int?>("Board")
-                        .HasColumnType("int")
-                        .HasColumnOrder(5);
-
-                    b.Property<int?>("Industry")
-                        .HasColumnType("int")
-                        .HasColumnOrder(6);
+                        .HasColumnType("int");
 
                     b.HasDiscriminator().HasValue("Stock");
+                });
+
+            modelBuilder.Entity("CapitalMarketData.Entities.Entities.IndiInstiTradingData", b =>
+                {
+                    b.HasOne("CapitalMarketData.Entities.Entities.Instrument", "Instrument")
+                        .WithMany("IndiInstiTradingData")
+                        .HasForeignKey("InstrumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Instrument");
                 });
 
             modelBuilder.Entity("CapitalMarketData.Entities.Entities.NAV", b =>
@@ -183,6 +232,8 @@ namespace CapitalMarketData.Data.Migrations
 
             modelBuilder.Entity("CapitalMarketData.Entities.Entities.Instrument", b =>
                 {
+                    b.Navigation("IndiInstiTradingData");
+
                     b.Navigation("TradingData");
                 });
 

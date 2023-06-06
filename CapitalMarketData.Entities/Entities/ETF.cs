@@ -2,10 +2,6 @@
 
 public class ETF : Instrument
 {
-    public ETF()
-    {
-        NAV = new HashSet<NAV>();
-    }
-
-    public ICollection<NAV> NAV { get; set; }
+    private HashSet<NAV> _nav = new();
+    public ICollection<NAV> NAV => _nav;
 }

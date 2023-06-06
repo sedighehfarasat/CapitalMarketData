@@ -14,6 +14,6 @@ public class StockProfile : Profile
             .ForMember(d => d.Ticker, mo => mo.MapFrom(s => s.Ticker))
             .ForMember(d => d.Name, mo => mo.MapFrom(s => s.Name))
             .ForMember(d => d.Board, mo => mo.MapFrom(s => s.Board))
-            .ForMember(d => d.Industry, mo => mo.MapFrom(s => s.Industry));
+            .ForMember(d => d.Industry, mo => mo.MapFrom(s => s.Sector));
     }
 }

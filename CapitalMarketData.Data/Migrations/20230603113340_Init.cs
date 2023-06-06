@@ -19,14 +19,41 @@ namespace CapitalMarketData.Data.Migrations
                     InsCode = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
                     Ticker = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    Board = table.Column<int>(type: "int", nullable: true),
-                    Industry = table.Column<int>(type: "int", nullable: true),
-                    Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Type = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Sector = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Subsector = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Board = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Instruments", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "IndividualInstitutionalTradingData",
+                columns: table => new
+                {
+                    InstrumentId = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IndividualNumberOfTrades_BuySide = table.Column<int>(type: "int", nullable: true),
+                    IndividualNumberOfTrades_SellSide = table.Column<int>(type: "int", nullable: true),
+                    IndividualTradingVolume_BuySide = table.Column<long>(type: "bigint", nullable: true),
+                    IndividualTradingVolume_SellSide = table.Column<long>(type: "bigint", nullable: true),
+                    InstitutionalNumberOfTrades_BuySide = table.Column<int>(type: "int", nullable: true),
+                    InstitutionalNumberOfTrades_SellSide = table.Column<int>(type: "int", nullable: true),
+                    InstitutionalTradingVolume_BuySide = table.Column<long>(type: "bigint", nullable: true),
+                    InstitutionalTradingVolume_SellSide = table.Column<long>(type: "bigint", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IndividualInstitutionalTradingData", x => new { x.InstrumentId, x.Date });
+                    table.ForeignKey(
+                        name: "FK_IndividualInstitutionalTradingData_Instruments_InstrumentId",
+                        column: x => x.InstrumentId,
+                        principalTable: "Instruments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -79,6 +106,11 @@ namespace CapitalMarketData.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_IndividualInstitutionalTradingData_InstrumentId",
+                table: "IndividualInstitutionalTradingData",
+                column: "InstrumentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_NAVs_InstrumentId",
                 table: "NAVs",
                 column: "InstrumentId");
@@ -92,6 +124,9 @@ namespace CapitalMarketData.Data.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "IndividualInstitutionalTradingData");
+
             migrationBuilder.DropTable(
                 name: "NAVs");
 
