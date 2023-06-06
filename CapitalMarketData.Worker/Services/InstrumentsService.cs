@@ -8,13 +8,11 @@ namespace CapitalMarketData.Worker.Services;
 
 public class InstrumentsService
 {
-    private readonly IEtfRepository _etfRepo;
-    private readonly IStockRepository _stockRepo;
+    private readonly IInstrumentRepository _instrumentRepo;
 
-    public InstrumentsService(IEtfRepository etfRepo, IStockRepository stockRepo)
+    public InstrumentsService(IInstrumentRepository instrumentRepo)
     {
-        _etfRepo = etfRepo;
-        _stockRepo = stockRepo;
+        _instrumentRepo = instrumentRepo;
     }
 
     public async Task Update()
@@ -45,7 +43,7 @@ public class InstrumentsService
 
     private async Task UpdateETFs(InstrumentIdentityRoot data, string code)
     {
-        var etf = await _etfRepo.GetById(data.instrumentIdentity.instrumentID);
+        var etf = await _instrumentRepo.GetById(data.instrumentIdentity.instrumentID);
         if (etf is null)
         {
             ETF newEtf = new()
@@ -59,27 +57,27 @@ public class InstrumentsService
                 Subsector = (Entities.Enums.Subsector)data.instrumentIdentity.subSector.cSoSecVal,
             };
 
-            await _etfRepo.Add(newEtf);
+            await _instrumentRepo.Add(newEtf);
         }
     }
 
-    private async Task UpdateStocks(InstrumentIdentityRoot data, string code)
-    {
-        var stock = await _stockRepo.GetById(data.instrumentIdentity.instrumentID);
-        if (stock is null)
-        {
-            var newStock = new Entities.Entities.Stock()
-            {
-                Id = data.instrumentIdentity.instrumentID,
-                InsCode = code,
-                Ticker = data.instrumentIdentity.lVal18AFC,
-                Name = data.instrumentIdentity.lVal30,
-                Type = (InstrumentType)int.Parse(data.instrumentIdentity.yVal),
-                //Board = ,
-                Sector = (Entities.Enums.Sector)int.Parse(data.instrumentIdentity.sector.cSecVal),
-            };
+    //private async Task UpdateStocks(InstrumentIdentityRoot data, string code)
+    //{
+    //    var stock = await _stockRepo.GetById(data.instrumentIdentity.instrumentID);
+    //    if (stock is null)
+    //    {
+    //        var newStock = new Entities.Entities.Stock()
+    //        {
+    //            Id = data.instrumentIdentity.instrumentID,
+    //            InsCode = code,
+    //            Ticker = data.instrumentIdentity.lVal18AFC,
+    //            Name = data.instrumentIdentity.lVal30,
+    //            Type = (InstrumentType)int.Parse(data.instrumentIdentity.yVal),
+    //            //Board = ,
+    //            Sector = (Entities.Enums.Sector)int.Parse(data.instrumentIdentity.sector.cSecVal),
+    //        };
 
-            await _stockRepo.Add(newStock);
-        }
-    }
+    //        await _stockRepo.Add(newStock);
+    //    }
+    //}
 }

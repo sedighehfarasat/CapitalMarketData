@@ -30,11 +30,11 @@ try
             option.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
         });
 
-        services.AddScoped<IStockRepository, StockRepository>();
-        services.AddScoped<IEtfRepository, EtfRepository>();
+        services.AddScoped<IInstrumentRepository, InstrumentRepository>();
         services.AddScoped<ITradingDataRepository, TradingDataRepository>();
+        services.AddScoped<IIndiInstiTradingDataRepository, IndiInstiTradingDataRepository>();
 
-        services.AddSingleton<UpdateInstruments>();
+        services.AddSingleton<InstrumentsService>();
 
         services.AddHostedService<Worker>();
     })

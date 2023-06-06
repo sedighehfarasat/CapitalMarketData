@@ -9,5 +9,5 @@ public class StockViewModel
     public string? Ticker { get; set; }
     public string? Name { get; set; }
     public Board? Board { get; set; }
-    public Industry? Industry { get; set; }
+    public Sector? Industry { get; set; }
 }

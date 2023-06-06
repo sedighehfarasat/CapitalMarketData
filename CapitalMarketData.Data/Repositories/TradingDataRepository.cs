@@ -13,17 +13,15 @@ public class TradingDataRepository : ITradingDataRepository
         _db = db;
     }
 
-    public async Task<int> Add(TradingData? data)
+    public async Task Add(TradingData? data)
     {
         ArgumentNullException.ThrowIfNull(data);
 
-        int affected = 0;
         if (await _db.TradingData.AnyAsync(x => x.Date == data.Date && x.InstrumentId == data.InstrumentId) == false)
         {
             await _db.TradingData.AddAsync(data);
-            affected = _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
-        return affected;
     }
 
     public async Task<TradingData?> GetTodayDataByInstrumentId(string instrumentId)
