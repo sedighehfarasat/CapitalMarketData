@@ -8,6 +8,6 @@ public class StockViewModel
     public string? InsCode { get; set; }
     public string? Ticker { get; set; }
     public string? Name { get; set; }
-    public Board? Board { get; set; }
-    public Sector? Industry { get; set; }
+    public string? Board { get; set; }
+    public string? Industry { get; set; }
 }

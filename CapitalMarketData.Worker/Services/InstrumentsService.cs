@@ -9,10 +9,14 @@ namespace CapitalMarketData.Worker.Services;
 public class InstrumentsService
 {
     private readonly IInstrumentRepository _instrumentRepo;
+    private readonly IEtfRepository _etfRepo;
+    private readonly IStockRepository _stockRepo;
 
-    public InstrumentsService(IInstrumentRepository instrumentRepo)
+    public InstrumentsService(IInstrumentRepository instrumentRepo, IEtfRepository etfRepo, IStockRepository stockRepo)
     {
         _instrumentRepo = instrumentRepo;
+        _etfRepo = etfRepo;
+        _stockRepo = stockRepo;
     }
 
     public async Task Update()
@@ -24,10 +28,20 @@ public class InstrumentsService
             {
                 var data = await TsetmcService.GetIntrumentInfo(code) ?? throw new Exception();
 
-                if ((InstrumentType)int.Parse(data.instrumentIdentity.yVal) is InstrumentType.Etf || 
-                    (InstrumentType)int.Parse(data.instrumentIdentity.yVal) is InstrumentType.CommodityEtf)
+                switch (Enum.Parse(typeof(InstrumentType), data.instrumentIdentity.yVal))
                 {
-                    await UpdateETFs(data, code);
+                    case InstrumentType.Etf:
+                    case InstrumentType.CommodityEtf:
+                        await UpdateETFs(data, code);
+                        break;
+                    case InstrumentType.Stock1:
+                    case InstrumentType.Stock2:
+                    case InstrumentType.Stock3:
+                    case InstrumentType.Stock4:
+                        await UpdateStocks(data, code);
+                        break;
+                    default:
+                        break;
                 }
             }
             catch (Exception ex)
@@ -43,7 +57,7 @@ public class InstrumentsService
 
     private async Task UpdateETFs(InstrumentIdentityRoot data, string code)
     {
-        var etf = await _instrumentRepo.GetById(data.instrumentIdentity.instrumentID);
+        var etf = await _etfRepo.GetById(data.instrumentIdentity.instrumentID);
         if (etf is null)
         {
             ETF newEtf = new()
@@ -61,23 +75,24 @@ public class InstrumentsService
         }
     }
 
-    //private async Task UpdateStocks(InstrumentIdentityRoot data, string code)
-    //{
-    //    var stock = await _stockRepo.GetById(data.instrumentIdentity.instrumentID);
-    //    if (stock is null)
-    //    {
-    //        var newStock = new Entities.Entities.Stock()
-    //        {
-    //            Id = data.instrumentIdentity.instrumentID,
-    //            InsCode = code,
-    //            Ticker = data.instrumentIdentity.lVal18AFC,
-    //            Name = data.instrumentIdentity.lVal30,
-    //            Type = (InstrumentType)int.Parse(data.instrumentIdentity.yVal),
-    //            //Board = ,
-    //            Sector = (Entities.Enums.Sector)int.Parse(data.instrumentIdentity.sector.cSecVal),
-    //        };
+    private async Task UpdateStocks(InstrumentIdentityRoot data, string code)
+    {
+        var stock = await _stockRepo.GetById(data.instrumentIdentity.instrumentID);
+        if (stock is null)
+        {
+            Entities.Entities.Stock newStock = new()
+            {
+                Id = data.instrumentIdentity.instrumentID,
+                InsCode = code,
+                Ticker = data.instrumentIdentity.lVal18AFC,
+                Name = data.instrumentIdentity.lVal30,
+                Type = (InstrumentType)int.Parse(data.instrumentIdentity.yVal),
+                Board = null, //(Board)int.Parse(data.instrumentIdentity.yVal),
+                Sector = (Entities.Enums.Sector)int.Parse(data.instrumentIdentity.sector.cSecVal),
+                Subsector = (Entities.Enums.Subsector)data.instrumentIdentity.subSector.cSoSecVal,
+            };
 
-    //        await _stockRepo.Add(newStock);
-    //    }
-    //}
+            await _instrumentRepo.Add(newStock);
+        }
+    }
 }

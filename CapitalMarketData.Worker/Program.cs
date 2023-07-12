@@ -31,6 +31,8 @@ try
         });
 
         services.AddScoped<IInstrumentRepository, InstrumentRepository>();
+        services.AddScoped<IEtfRepository, EtfRepository>();
+        services.AddScoped<IStockRepository, StockRepository>();
         services.AddScoped<ITradingDataRepository, TradingDataRepository>();
         services.AddScoped<IIndiInstiTradingDataRepository, IndiInstiTradingDataRepository>();
 

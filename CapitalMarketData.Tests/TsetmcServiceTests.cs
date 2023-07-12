@@ -6,26 +6,19 @@ public class TsetmcServiceTests
 {
 
     [Fact]
-    public async Task TsetmcService_GetInsCodesFromFile()
+    public async Task GetInsCodes()
     {
-        var data = await TsetmcService.GetInsCodes();
-        Assert.NotNull(data);
+        var insCodes = await TsetmcService.GetInsCodes();
+        Assert.NotNull(insCodes);
     }
 
     [Fact]
-    public async Task TsetmcService_GetIntrumentInfo()
+    public async Task GetIntrumentInfo()
     {
         string insCode = "24651394045981418";
         var data = await TsetmcService.GetIntrumentInfo(insCode);
         Assert.NotNull(data);
     }
-
-    [Fact]
-    public async Task TsetmcService_GetInsCodes()
-    {
-        await TsetmcService.GetInsCodes();
-    }
-
 
     [Fact]
     public async Task TsetmcService_GetPriceData()
