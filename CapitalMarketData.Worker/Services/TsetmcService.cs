@@ -68,7 +68,6 @@ public static class TsetmcService
         var url = $@"http://cdn.tsetmc.com/api/ClientType/GetClientType/{insCode}/1/0";
         HttpClient client = new();
         HttpResponseMessage response = await client.GetAsync(url);
-        // TODO: Retry sending request in case of failing.
         response.EnsureSuccessStatusCode();
         string responseString = await response.Content.ReadAsStringAsync();
         ClientTypeData? indiInstiData = JsonSerializer.Deserialize<ClientTypeData>(responseString);
@@ -87,7 +86,6 @@ public static class TsetmcService
         var url = $@"http://cdn.tsetmc.com/api/ClosingPrice/GetClosingPriceDaily/{insCode}/{DateTime.Now.Date:yyyyMMdd}";
         HttpClient client = new();
         HttpResponseMessage response = await client.GetAsync(url);
-        // TODO: Retry sending request in case of failing.
         response.EnsureSuccessStatusCode();
         string responseString = await response.Content.ReadAsStringAsync();
         ClosingPriceDailyRoot? priceData = JsonSerializer.Deserialize<ClosingPriceDailyRoot>(responseString);
@@ -106,7 +104,6 @@ public static class TsetmcService
         var url = $@"http://cdn.tsetmc.com/api/MarketData/GetInstrumentState/{insCode}/{DateTime.Now.Date:yyyyMMdd}";
         HttpClient client = new();
         HttpResponseMessage response = await client.GetAsync(url);
-        // TODO: Retry sending request in case of failing.
         response.EnsureSuccessStatusCode();
         string responseString = await response.Content.ReadAsStringAsync();
         InstrumentStateList? stateList = JsonSerializer.Deserialize<InstrumentStateList>(responseString);
@@ -125,7 +122,6 @@ public static class TsetmcService
         var url = $@"http://cdn.tsetmc.com/api/MarketData/GetStaticThreshold/{insCode}/{DateTime.Now.Date:yyyyMMdd}";
         HttpClient client = new();
         HttpResponseMessage response = await client.GetAsync(url);
-        // TODO: Retry sending request in case of failing.
         response.EnsureSuccessStatusCode();
         string responseString = await response.Content.ReadAsStringAsync();
         StaticThresholdList? staticThresholdList = JsonSerializer.Deserialize<StaticThresholdList>(responseString);

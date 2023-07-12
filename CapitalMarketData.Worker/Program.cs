@@ -37,6 +37,8 @@ try
         services.AddScoped<IIndiInstiTradingDataRepository, IndiInstiTradingDataRepository>();
 
         services.AddSingleton<InstrumentsService>();
+        services.AddSingleton<TradingDataService>();
+        services.AddSingleton<InstiIndiService>();
 
         services.AddHostedService<Worker>();
     })
