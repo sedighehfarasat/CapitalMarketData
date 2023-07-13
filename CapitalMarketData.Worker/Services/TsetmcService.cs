@@ -15,7 +15,7 @@ public static class TsetmcService
     {
         List<string> insCodes = new();
 
-        var url = $@"http://old.tsetmc.com/tsev2/data/MarketWatchInit.aspx?h=0&r=0";
+        var url = $@"http://old.tsetmc.com/Loader.aspx?ParTree=111C1417";
         HttpClientHandler handler = new()
         {
             AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
@@ -25,17 +25,13 @@ public static class TsetmcService
         response.EnsureSuccessStatusCode();
         var responseString = await response.Content.ReadAsStringAsync();
 
-        var rows = responseString.Replace(';', ',').Replace('-', ',').Replace('@', ',').Split(',');
-        Regex pattern = new(@"^\d+$");
-        foreach (var row in rows)
+        Regex pattern = new(@"inscode=\d+");
+        if (pattern.IsMatch(responseString))
         {
-            if (row.Length >= 15 && pattern.IsMatch(row))
-            {
-                insCodes.Add(row);
-            }
+            insCodes = pattern.Matches(responseString).Select(g => g.Value.Replace("inscode=", string.Empty)).Distinct().ToList();
         }
 
-        return insCodes.Distinct().ToList();
+        return insCodes;
     }
 
     /// <summary>
