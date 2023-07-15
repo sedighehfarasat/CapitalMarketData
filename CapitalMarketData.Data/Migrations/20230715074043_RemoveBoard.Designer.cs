@@ -4,6 +4,7 @@ using CapitalMarketData.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CapitalMarketData.Data.Migrations
 {
     [DbContext(typeof(CapitalMarketDataDbContext))]
-    partial class CapitalMarketDataDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230715074043_RemoveBoard")]
+    partial class RemoveBoard
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

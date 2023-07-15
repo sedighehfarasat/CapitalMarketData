@@ -2,6 +2,7 @@
 using CapitalMarketData.Entities.Entities;
 using CapitalMarketData.Entities.Enums;
 using CapitalMarketData.Worker.Models;
+using Serilog;
 
 namespace CapitalMarketData.Worker.Services;
 
@@ -23,26 +24,35 @@ public class InstrumentsService
         var insCodes = await TsetmcService.GetInsCodes();
         foreach (var code in insCodes)
         {
-            var data = await TsetmcService.GetIntrumentInfo(code);
-            if (data is null) continue;
-
-            switch (Enum.Parse(typeof(InstrumentType), data.instrumentIdentity.yVal))
+            try
             {
-                case InstrumentType.Etf:
-                case InstrumentType.CommodityEtf:
-                    await UpdateETFs(data, code);
-                    break;
-                case InstrumentType.Stock_Exchange:
-                case InstrumentType.Stock_OffExchange:
-                case InstrumentType.Stock_BaseMarket:
-                case InstrumentType.Stock4:
-                    await UpdateStocks(data, code);
-                    break;
-                default:
-                    break;
-            }
+                var data = await TsetmcService.GetIntrumentInfo(code);
+                if (data is null) continue;
 
-            await Task.Delay(500);
+                switch (Enum.Parse(typeof(InstrumentType), data.instrumentIdentity.yVal))
+                {
+                    case InstrumentType.Etf:
+                    case InstrumentType.CommodityEtf:
+                        await UpdateETFs(data, code);
+                        break;
+                    case InstrumentType.Stock_Exchange:
+                    case InstrumentType.Stock_OffExchange:
+                    case InstrumentType.Stock_BaseMarket:
+                    case InstrumentType.Stock4:
+                        await UpdateStocks(data, code);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Exception Caught On {code}: {e.Message}");
+            }
+            finally
+            {
+                await Task.Delay(500);
+            }
         }
     }
 

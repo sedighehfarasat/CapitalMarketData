@@ -15,7 +15,7 @@ public static class TsetmcService
     {
         List<string> insCodes = new();
 
-        var url = $@"http://old.tsetmc.com/Loader.aspx?ParTree=111C1417";
+        var url = $@"http://old.tsetmc.com/Loader.aspx?ParTree=151114";
         HttpClientHandler handler = new()
         {
             AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
@@ -25,10 +25,10 @@ public static class TsetmcService
         response.EnsureSuccessStatusCode();
         var responseString = await response.Content.ReadAsStringAsync();
 
-        Regex pattern = new(@"inscode=\d+");
+        Regex pattern = new(@"ParTree=151311&i=\d+");
         if (pattern.IsMatch(responseString))
         {
-            insCodes = pattern.Matches(responseString).Select(g => g.Value.Replace("inscode=", string.Empty)).Distinct().ToList();
+            insCodes = pattern.Matches(responseString).Select(g => g.Value.Replace("ParTree=151311&i=", string.Empty)).Distinct().ToList();
         }
 
         return insCodes;
