@@ -8,6 +8,5 @@ public class StockTypeConfiguration : IEntityTypeConfiguration<Stock>
 {
     public void Configure(EntityTypeBuilder<Stock> builder)
     {
-        builder.Property(x => x.Board);
     }
 }

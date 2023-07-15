@@ -2,7 +2,6 @@
 using CapitalMarketData.Entities.Entities;
 using CapitalMarketData.Entities.Enums;
 using CapitalMarketData.Worker.Models;
-using Serilog;
 
 namespace CapitalMarketData.Worker.Services;
 
@@ -24,34 +23,26 @@ public class InstrumentsService
         var insCodes = await TsetmcService.GetInsCodes();
         foreach (var code in insCodes)
         {
-            try
-            {
-                var data = await TsetmcService.GetIntrumentInfo(code) ?? throw new Exception();
+            var data = await TsetmcService.GetIntrumentInfo(code);
+            if (data is null) continue;
 
-                switch (Enum.Parse(typeof(InstrumentType), data.instrumentIdentity.yVal))
-                {
-                    case InstrumentType.Etf:
-                    case InstrumentType.CommodityEtf:
-                        await UpdateETFs(data, code);
-                        break;
-                    case InstrumentType.Stock1:
-                    case InstrumentType.Stock2:
-                    case InstrumentType.Stock3:
-                    case InstrumentType.Stock4:
-                        await UpdateStocks(data, code);
-                        break;
-                    default:
-                        break;
-                }
-            }
-            catch (Exception ex)
+            switch (Enum.Parse(typeof(InstrumentType), data.instrumentIdentity.yVal))
             {
-                Log.Error($"Error On {code}: {ex.Message}");
+                case InstrumentType.Etf:
+                case InstrumentType.CommodityEtf:
+                    await UpdateETFs(data, code);
+                    break;
+                case InstrumentType.Stock_Exchange:
+                case InstrumentType.Stock_OffExchange:
+                case InstrumentType.Stock_BaseMarket:
+                case InstrumentType.Stock4:
+                    await UpdateStocks(data, code);
+                    break;
+                default:
+                    break;
             }
-            finally
-            {
-                await Task.Delay(500);
-            }
+
+            await Task.Delay(500);
         }
     }
 
@@ -87,7 +78,6 @@ public class InstrumentsService
                 Ticker = data.instrumentIdentity.lVal18AFC,
                 Name = data.instrumentIdentity.lVal30,
                 Type = (InstrumentType)int.Parse(data.instrumentIdentity.yVal),
-                Board = null, //(Board)int.Parse(data.instrumentIdentity.yVal),
                 Sector = (Entities.Enums.Sector)int.Parse(data.instrumentIdentity.sector.cSecVal),
                 Subsector = (Entities.Enums.Subsector)data.instrumentIdentity.subSector.cSoSecVal,
             };

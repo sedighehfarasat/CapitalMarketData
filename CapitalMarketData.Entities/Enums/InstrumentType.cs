@@ -13,9 +13,9 @@ public enum InstrumentType
     Sokuk = 208,
 
     /// <summary>
-    /// سهام
+    /// سهام - بورس
     /// </summary>
-    Stock1 = 300,
+    Stock_Exchange = 300,
 
     /// <summary>
     /// اوراق مشارکت
@@ -23,9 +23,9 @@ public enum InstrumentType
     Mosharekat = 301,
 
     /// <summary>
-    /// سهام
+    ///  سهام - فرابورس
     /// </summary>
-    Stock2 = 303,
+    Stock_OffExchange = 303,
 
     /// <summary>
     /// آتی سهام
@@ -53,9 +53,9 @@ public enum InstrumentType
     Salaf = 308,
 
     /// <summary>
-    /// سهام
+    /// سهام - بازار پایه
     /// </summary>
-    Stock3 = 309,
+    Stock_BaseMarket = 309,
 
     /// <summary>
     /// اختیار خرید

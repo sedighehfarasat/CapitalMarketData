@@ -28,7 +28,7 @@ public class Worker : BackgroundService
         #region Updating Instruments
         if (isUpdateNeeded.ToLower() == "y")
         {
-            Log.Information("The List Of Instuments Is Updating ...");
+            Log.Information("The List Of Instuments Updating ...");
             await _instrumentsService.Update();
             Log.Information("The List Of Instuments Updated.");
         }
