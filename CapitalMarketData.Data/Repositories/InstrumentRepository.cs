@@ -29,10 +29,10 @@ public class InstrumentRepository : IInstrumentRepository
         return await _db.Instruments.ToListAsync();
     }
 
-    //public async Task<Instrument?> GetById(string id)
-    //{
-    //    return await _db.Instruments.FirstOrDefaultAsync(x => x.Id == id);
-    //}
+    public async Task<Instrument?> GetById(string id)
+    {
+        return await _db.Instruments.FirstOrDefaultAsync(x => x.Id == id);
+    }
 
     //public async Task<Instrument?> GetByTicker(string ticker)
     //{
